@@ -1,0 +1,54 @@
+name: Sync with upstream release
+
+on:
+  workflow_dispatch:
+    inputs:
+      sync_tag:
+        description: "同步的上游版本 tag"
+        required: true
+
+env:
+  # Change this to the canonical "owner/repo" of the upstream project
+  UPSTREAM_REPO: "tangly1024/NotionNext"
+  DEV_BRANCH: "darkreunion"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # allow pushing back to the fork
+
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history so we can rebase
+
+      - name: Set up Git User
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Add upstream remote
+        run: git remote add upstream https://github.com/${{ env.UPSTREAM_REPO }}.git
+
+      - name: Fetch upstream data (tags & branches)
+        run: git fetch --prune --tags upstream
+
+      - name: Sync fork main with upstream main (fast‑forward)
+        run: |
+          git checkout --track origin/main
+          git merge --ff-only ${{ github.event.inputs.sync_tag }}
+
+      - name: Rebase $DEV_BRANCH onto updated main
+        run: |
+          git checkout ${{ env.DEV_BRANCH }}
+          git rebase main
+          # Force-with-lease protects against overwriting remote changes
+          git push --force-with-lease origin ${{ env.DEV_BRANCH }}
+          git push origin main
+
+      - name: Summary
+        run: |
+          echo "Fork main is now up‑to‑date with upstream."
+          echo "Branch $DEV_BRANCH successfully rebased on main."
