@@ -14,7 +14,8 @@ export default function ArticleCopyright({ author, url }) {
       <ul className='overflow-x-auto whitespace-nowrap text-sm dark:bg-gray-700 bg-gray-100 p-5 leading-8 border-l-2 border-blue-500'>
         <li>
           <strong className='mr-2'>{locale.COMMON.AUTHOR}:</strong>
-          <SmartLink href={'/about'} className='hover:underline'>
+          {/* <SmartLink href={'/about'} className='hover:underline'> */}
+          <SmartLink href={'/'} className="hover:underline">
             {author}
           </SmartLink>
         </li>
