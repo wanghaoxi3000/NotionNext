@@ -1,3 +1,4 @@
+import { AdSlot } from '@/components/GoogleAdsense'
 import Live2D from '@/components/Live2D'
 import Tabs from '@/components/Tabs'
 import { siteConfig } from '@/lib/config'
@@ -78,6 +79,10 @@ const SideAreaLeft = props => {
             </div>
           </Tabs>
         </Card>
+
+        <div className='mt-5 mb-5 max-h-[300px] w-full'>
+          <AdSlot type='auto' />
+        </div>
 
         <div className='flex justify-center'>
           {slot}
